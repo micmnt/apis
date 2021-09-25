@@ -1,4 +1,4 @@
-# APIS
+# Apis
 
 Apis is a small library based on [Axios](https://axios-http.com/) to facilitate making HTTP calls, using a configuration object that maps the URLs to make requests and automatically adding a Bearer Token, straight from local-storage, in the request auth headers.
 
