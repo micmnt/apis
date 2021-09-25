@@ -1,23 +1,23 @@
 import axios from 'axios'
 import { createHeaders, replacePlaceholders, isUrl } from './utils'
 
-/* Util che si occupa di creare una interfaccia semplificata per effettuare chiamate http */
+/* Library created to simplify making of http requests */
 let resources = {}
 let jwtToken = null
 
 /**
- * Funzione che si occupa di inizializzare il servizio di libreria API
- * @param {Object} config La configurazione di base del servizio di API.
- * @param {string} config.baseUrl L'URL di base da cui partono tutte le chiamate HTTP.
- * @param {Object} config.savedUrls Oggetto in cui i vari URL sono indicizzati mediante un nome.
- * @param {string} [config.jwtTokenName=null] Il nome del token JWT da prendere nel local-storage.
- * @param {Object} [config.placeholders=null] Oggetto in cui i vari placeholders presenti negli URL registrati sono indicizzati mediante un nome.
+ * Apis initialization function
+ * @param {Object} config Apis configuration object
+ * @param {string} config.baseUrl Base URL for all HTTP calls.
+ * @param {Object} config.savedUrls URL mapping object.
+ * @param {string} [config.jwtTokenName=null] JWT token name to look for in local storage.
+ * @param {Object} [config.placeholders=null] Placeholders mapping object.
  */
 const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholders = null }) => {
   const updatedUrls = Object.keys(savedUrls).reduce((acc, key) => {
     let currentUrl = isUrl(savedUrls[key]) ? savedUrls[key] : `${baseUrl}${savedUrls[key]}`
     if (placeholders) {
-      // Controllo che per quella chiave ci sia il parametro, se viene trovato, viene sostituito con il valore passato
+      // Check for placeholders in urls, if some are found, these will be replaced with the actual value
       currentUrl = replacePlaceholders(currentUrl, placeholders)
     }
 
@@ -32,8 +32,8 @@ const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholder
 }
 
 /**
- * Funzione che permette l'aggiornamento dei placeholders negli url
- * @param {Object} placeholders Oggetto in cui i vari placeholders presenti negli URL registrati sono indicizzati mediante un nome.
+ * Updating placeholders function
+ * @param {Object} placeholders Placeholders mapping object.
  */
 const updatePlaceholders = (placeholders = null) => {
   if (placeholders) {
@@ -47,18 +47,18 @@ const updatePlaceholders = (placeholders = null) => {
   }
 }
 
-// funzione che si occupa di settare i parametri iniziali di ogni chiamata
+// function to setup initial parameters for every request
 const resourcesBaseOperations = (resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
-  // creo gli headers per la chiamata
+  // creating request headers
   const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
-  // url di base
+  // base url
   const baseUrl = isUrl(resource) ? resource : resources[resource]
-  // url completo
+  // complete url
   const completeUrl = !path ? baseUrl : `${baseUrl}${path}`
   return body ? { url: completeUrl, headers, body } : { url: completeUrl, headers }
 }
 
-// Funzione che prende in ingresso metodo HTTP, url, headers ed eventuale body della chiamata HTTP e restituisce un oggetto formato da data e error in base all'esito della chiamata
+// Function with HTTP request's HTTP method, url, headers and body passed as arguments, that returns an object with 'data' and 'error' keys
 const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null }) => {
   // Corpo di base della risposta
   const baseResponse = { data: null, error: null }
@@ -74,9 +74,9 @@ const executeRequest = async ({ fullResponse = false, method = 'get', url, heade
 }
 
 /**
- * funzione che si occupa di fare chiamate GET
- * @param {Object} config Oggetto di configurazione per eseguire la chiamata GET
- * @returns {Object} Oggetto contenente la risposta o l'eventuale errore della chiamata
+ * Function to make GET requests
+ * @param {Object} config Configuration object for GET requests
+ * @returns {Object} Object with response and error for the request
  */
 const getResource = async ({ savedUrl, ...options }) => {
   const { url, headers } = resourcesBaseOperations(savedUrl, options)
@@ -85,9 +85,9 @@ const getResource = async ({ savedUrl, ...options }) => {
 }
 
 /**
- * funzione che si occupa di fare chiamate POST
- * @param {Object} config Oggetto di configurazione per eseguire la chiamata POST
- * @returns {Object} Oggetto contenente la risposta o l'eventuale errore della chiamata
+ * Function to make POST requests
+ * @param {Object} config Configuration object for POST requests
+ * @returns {Object} Object with response and error for the request
  */
 const postResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
@@ -99,9 +99,9 @@ const postResource = async ({ savedUrl, ...options }) => {
 }
 
 /**
- * funzione che si occupa di fare chiamate PUT
- * @param {Object} config Oggetto di configurazione per eseguire la chiamata PUT
- * @returns {Object} Oggetto contenente la risposta o l'eventuale errore della chiamata
+ * Function to make PUT requests
+ * @param {Object} config Configuration object for PUT requests
+ * @returns {Object} Object with response and error for the request
  */
 const putResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
@@ -113,9 +113,9 @@ const putResource = async ({ savedUrl, ...options }) => {
 }
 
 /**
- * funzione che si occupa di fare chiamate DELETE
- * @param {Object} config Oggetto di configurazione per eseguire la chiamata DELETE
- * @returns {Object} Oggetto contenente la risposta o l'eventuale errore della chiamata
+ * Function to make DELETE requests
+ * @param {Object} config Configuration object for DELETE requests
+ * @returns {Object} Object with response and error for the request
  */
 const deleteResource = async ({ savedUrl, ...options }) => {
   const { url, headers } = resourcesBaseOperations(savedUrl, options)

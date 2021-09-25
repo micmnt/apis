@@ -1,4 +1,4 @@
-// Funzione che si occupa di creare l'header di autorizzazione e popolarlo con il token presente nel localStorage
+// Function that creates and sets up the authorization header with local storage token
 export function createHeaders (params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null) {
   const token = tokenName ? window.localStorage.getItem(tokenName) : tokenName
 
@@ -30,8 +30,7 @@ export function createHeaders (params = null, overrideAuthToken = null, disableA
   return headers
 }
 
-// Funzione che preso in ingresso un url e un oggetto con le chiavi dei placeholder presenti nell'url,
-// applica la sostituzione dei placeholder e restituisce l'url modificato
+// Function with mapping placeholders object passed as argument, that switches placeholders with their actual values
 export const replacePlaceholders = (url, placeholders) => {
   const modifiedUrl = Object.keys(placeholders).reduce((acc, placeholder) => {
     if (url.includes(`/:${placeholder}/`)) {
@@ -44,7 +43,7 @@ export const replacePlaceholders = (url, placeholders) => {
   return modifiedUrl
 }
 
-// Funzione che presa in ingresso una stringa, verifica se si tratta di un url o meno
+// Function to check if a string is a url
 export const isUrl = (text = null) => {
   return text && (text.startsWith('http://') || text.startsWith('https://'))
 }
