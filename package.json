@@ -1,0 +1,26 @@
+{
+  "name": "apis",
+  "version": "1.0.0",
+  "description": "Apis is a small library to simplify HTTP requests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micmnt/apis.git"
+  },
+  "keywords": [
+    "http",
+    "requests"
+  ],
+  "author": "Michele Landolfi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/micmnt/apis/issues"
+  },
+  "homepage": "https://github.com/micmnt/apis#readme",
+  "dependencies": {
+    "axios": "^0.21.4"
+  }
+}
