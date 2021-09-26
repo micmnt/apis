@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 // Function that creates and sets up the authorization header with local storage token
 export function createHeaders (params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null) {
   const token = tokenName ? window.localStorage.getItem(tokenName) : tokenName
@@ -49,7 +51,7 @@ export const isUrl = (text = null) => {
 }
 
 // function to setup initial parameters for every request
-export const resourcesBaseOperations = (resources, resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
+export const resourcesBaseOperations = (resources, jwtToken, resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
   // creating request headers
   const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
   // base url

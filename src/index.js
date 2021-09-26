@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { replacePlaceholders, isUrl, resourcesBaseOperations, executeRequest } from './utils'
 
 /* Library created to simplify making of http requests */
@@ -47,16 +46,13 @@ const updatePlaceholders = (placeholders = null) => {
   }
 }
 
-
-
-
 /**
  * Function to make GET requests
  * @param {Object} config Configuration object for GET requests
  * @returns {Object} Object with response and error for the request
  */
 const getResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(resources, savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'get', url, headers })
   return response
 }
@@ -70,7 +66,7 @@ const postResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(resources, savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'post', url, headers, body })
   return response
 }
@@ -84,7 +80,7 @@ const putResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(resources, savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'put', url, headers, body })
   return response
 }
@@ -95,7 +91,7 @@ const putResource = async ({ savedUrl, ...options }) => {
  * @returns {Object} Object with response and error for the request
  */
 const deleteResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(resources, savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers })
   return response
 }
