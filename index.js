@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { createHeaders, replacePlaceholders, isUrl } from './utils'
+import { replacePlaceholders, isUrl, resourcesBaseOperations, executeRequest } from './utils'
 
 /* Library created to simplify making of http requests */
 let resources = {}
@@ -47,31 +47,8 @@ const updatePlaceholders = (placeholders = null) => {
   }
 }
 
-// function to setup initial parameters for every request
-const resourcesBaseOperations = (resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
-  // creating request headers
-  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
-  // base url
-  const baseUrl = isUrl(resource) ? resource : resources[resource]
-  // complete url
-  const completeUrl = !path ? baseUrl : `${baseUrl}${path}`
-  return body ? { url: completeUrl, headers, body } : { url: completeUrl, headers }
-}
 
-// Function with HTTP request's HTTP method, url, headers and body passed as arguments, that returns an object with 'data' and 'error' keys
-const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null }) => {
-  // Corpo di base della risposta
-  const baseResponse = { data: null, error: null }
-  try {
-    const resourceResponse = body ? await axios[method](url, body, headers) : await axios[method](url, headers)
-    const { data: response, ...rest } = resourceResponse
-    baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
-  } catch (error) {
-    baseResponse.error = error
-  }
 
-  return baseResponse
-}
 
 /**
  * Function to make GET requests
@@ -79,7 +56,7 @@ const executeRequest = async ({ fullResponse = false, method = 'get', url, heade
  * @returns {Object} Object with response and error for the request
  */
 const getResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'get', url, headers })
   return response
 }
@@ -93,7 +70,7 @@ const postResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'post', url, headers, body })
   return response
 }
@@ -107,7 +84,7 @@ const putResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'put', url, headers, body })
   return response
 }
@@ -118,7 +95,7 @@ const putResource = async ({ savedUrl, ...options }) => {
  * @returns {Object} Object with response and error for the request
  */
 const deleteResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, savedUrl, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers })
   return response
 }

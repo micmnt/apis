@@ -47,3 +47,29 @@ export const replacePlaceholders = (url, placeholders) => {
 export const isUrl = (text = null) => {
   return text && (text.startsWith('http://') || text.startsWith('https://'))
 }
+
+// function to setup initial parameters for every request
+export const resourcesBaseOperations = (resources, resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
+  // creating request headers
+  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
+  // base url
+  const baseUrl = isUrl(resource) ? resource : resources[resource]
+  // complete url
+  const completeUrl = !path ? baseUrl : `${baseUrl}${path}`
+  return body ? { url: completeUrl, headers, body } : { url: completeUrl, headers }
+}
+
+// Function with HTTP request's HTTP method, url, headers and body passed as arguments, that returns an object with 'data' and 'error' keys
+export const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null }) => {
+  // Corpo di base della risposta
+  const baseResponse = { data: null, error: null }
+  try {
+    const resourceResponse = body ? await axios[method](url, body, headers) : await axios[method](url, headers)
+    const { data: response, ...rest } = resourceResponse
+    baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
+  } catch (error) {
+    baseResponse.error = error
+  }
+
+  return baseResponse
+}
