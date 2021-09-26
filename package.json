@@ -4,9 +4,11 @@
   "description": "Apis is a small library to simplify HTTP requests",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "npm run lint && babel src --out-dir lib",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "build:publish": "npm run lint && npm run test && npm run build",
+    "prepublishOnly": "npm run build:publish"
   },
   "repository": {
     "type": "git",
