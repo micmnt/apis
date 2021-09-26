@@ -34,15 +34,19 @@ export function createHeaders (params = null, overrideAuthToken = null, disableA
 
 // Function with mapping placeholders object passed as argument, that switches placeholders with their actual values
 export const replacePlaceholders = (url, placeholders) => {
-  const modifiedUrl = Object.keys(placeholders).reduce((acc, placeholder) => {
-    if (url.includes(`/:${placeholder}/`)) {
-      acc = url.replace(`/:${placeholder}/`, `${placeholders[placeholder]}/`)
-    }
+  if (url && placeholders) {
+    const modifiedUrl = Object.keys(placeholders).reduce((acc, placeholder) => {
+      if (url.includes(`/:${placeholder}/`)) {
+        acc = url.replace(`/:${placeholder}/`, `${placeholders[placeholder]}/`)
+      }
 
-    return acc
-  }, url)
+      return acc
+    }, url)
 
-  return modifiedUrl
+    return modifiedUrl
+  }
+
+  return ''
 }
 
 // Function to check if a string is a url
