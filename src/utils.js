@@ -12,20 +12,20 @@ export function createHeaders (params = null, overrideAuthToken = null, disableA
     headers.headers.authorization = overrideAuthToken || `Bearer ${token}`
   }
 
-  if (customHeaders.length > 0) {
+  if (customHeaders?.length > 0) {
     customHeaders.forEach(customHeader => {
-      const { key, value } = customHeader
+      const { key, value } = customHeader || {}
       if (key && value) {
         headers.headers[key] = value
       }
     })
   }
 
-  if (params) {
+  if (params && typeof params === 'object' && !(params instanceof Array)) {
     headers.params = params
   }
 
-  if (responseType) {
+  if (responseType && typeof responseType === 'string') {
     headers.responseType = responseType
   }
 
@@ -59,7 +59,7 @@ export const resourcesBaseOperations = (resources, jwtToken, resource, { respons
   // creating request headers
   const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
   // base url
-  const baseUrl = isUrl(resource) ? resource : resources[resource]
+  const baseUrl = isUrl(resource) ? resource : resources ? resources[resource] || '' : ''
   // complete url
   const completeUrl = !path ? baseUrl : `${baseUrl}${path}`
   return body ? { url: completeUrl, headers, body } : { url: completeUrl, headers }
