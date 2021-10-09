@@ -1,5 +1,5 @@
 {
-  "name": "apis",
+  "name": "http-apis",
   "version": "1.0.0",
   "description": "Apis is a small library to simplify HTTP requests",
   "main": "lib/index.js",
