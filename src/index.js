@@ -1,7 +1,9 @@
-import { replacePlaceholders, isUrl, resourcesBaseOperations, executeRequest } from './utils'
+import { replacePlaceholders, isUrl, resourcesBaseOperations, executeRequest, prepareResources } from './utils'
 
 /* Library created to simplify making of http requests */
 let resources = {}
+let rawUrlsConfig = {}
+let domain = ''
 let jwtToken = null
 
 /**
@@ -13,16 +15,9 @@ let jwtToken = null
  * @param {Object} [config.placeholders=null] Placeholders mapping object.
  */
 const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholders = null }) => {
-  const updatedUrls = Object.keys(savedUrls).reduce((acc, key) => {
-    let currentUrl = isUrl(savedUrls[key]) ? savedUrls[key] : `${baseUrl}${savedUrls[key]}`
-    if (placeholders) {
-      // Check for placeholders in urls, if some are found, these will be replaced with the actual value
-      currentUrl = replacePlaceholders(currentUrl, placeholders)
-    }
-
-    acc[key] = currentUrl
-    return acc
-  }, {})
+  rawUrlsConfig = savedUrls
+  domain = baseUrl
+  const updatedUrls = prepareResources({urlsConfig: savedUrls, baseUrl, placeholders})
 
   resources = updatedUrls
   if (jwtTokenName) {
@@ -36,12 +31,7 @@ const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholder
  */
 const updatePlaceholders = (placeholders = null) => {
   if (placeholders) {
-    const updatedUrls = Object.keys(resources).reduce((acc, key) => {
-      const currentUrl = replacePlaceholders(resources[key], placeholders)
-      acc[key] = currentUrl
-      return acc
-    }, {})
-
+    const updatedUrls = prepareResources({urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders})
     resources = updatedUrls
   }
 }

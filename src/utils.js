@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // Function that creates and sets up the authorization header with local storage token
-export function createHeaders (params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null) {
+export function createHeaders(params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null) {
   const token = tokenName ? window.localStorage.getItem(tokenName) : tokenName
 
   const headers = {
@@ -30,6 +30,22 @@ export function createHeaders (params = null, overrideAuthToken = null, disableA
   }
 
   return headers
+}
+
+// Function that sets up the resources object from the init configuration
+export const prepareResources = ({ urlsConfig = {}, baseUrl = '', placeholders = {} }) => {
+  const updatedUrls = Object.keys(urlsConfig).reduce((acc, key) => {
+    let currentUrl = isUrl(urlsConfig[key]) ? urlsConfig[key] : `${baseUrl}${urlsConfig[key]}`
+    if (placeholders) {
+      // Check for placeholders in urls, if some are found, these will be replaced with the actual value
+      currentUrl = replacePlaceholders(currentUrl, placeholders)
+    }
+
+    acc[key] = currentUrl
+    return acc
+  }, {})
+
+  return updatedUrls
 }
 
 // Function with mapping placeholders object passed as argument, that switches placeholders with their actual values
