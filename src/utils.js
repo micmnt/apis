@@ -52,8 +52,8 @@ export const prepareResources = ({ urlsConfig = {}, baseUrl = '', placeholders =
 export const replacePlaceholders = (url, placeholders) => {
   if (url && placeholders) {
     const modifiedUrl = Object.keys(placeholders).reduce((acc, placeholder) => {
-      if (url.includes(`/:${placeholder}/`)) {
-        acc = url.replace(`/:${placeholder}/`, `${placeholders[placeholder]}/`)
+      if (url.includes(`/:${placeholder}`)) {
+        acc = url.replace(`/:${placeholder}`, `${placeholders[placeholder]}`)
       }
 
       return acc

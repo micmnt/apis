@@ -13,7 +13,8 @@ describe('updatePlaceholders function tests', () => {
   const baseUrl = 'https://baseurl.com'
 
   const resources = {
-    key: '/:placeholder/value'
+    key: '/:placeholder/value',
+    noTrailingSlashKey: '/:noTrailingSlashPlaceholder'
   }
 
   // LocalStorage setup before all tests
@@ -59,6 +60,25 @@ describe('updatePlaceholders function tests', () => {
     api.updatePlaceholders({placeholder: '/newkey'})
     await api.get({savedUrl: 'key'})
     expect(currentUrl).toBe(secondUpdatedFullUrl)
+  })
+
+  it('Update the placeholder ignoring the trailing slash', async () => {
+    let currentUrl = baseUrl
+    const notUpdatedFullUrl = 'https://baseurl.com/:noTrailingSlashPlaceholder'
+    const updatedFullUrl = 'https://baseurl.com/key'
+
+    axios.interceptors.request.use(function (config) {
+      currentUrl = config.url
+    })
+
+    // Execute a first HTTP GET request without updating any placeholder in the resources object
+    await api.get({savedUrl: 'noTrailingSlashKey'})
+    expect(currentUrl).toBe(notUpdatedFullUrl)
+
+    // Execute a second HTTP GET request after update some placeholders
+    api.updatePlaceholders({noTrailingSlashPlaceholder: '/key'})
+    await api.get({ savedUrl: 'noTrailingSlashKey' })
+    expect(currentUrl).toBe(updatedFullUrl)
   })
 
 })
