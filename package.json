@@ -44,6 +44,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "jest": "^28.1.0",
+    "jest-environment-jsdom": "^28.1.0",
     "regenerator-runtime": "^0.13.9"
   }
 }
