@@ -3,7 +3,7 @@
  */
 
 import axios from 'axios'
-import { createHeaders, executeRequest, isUrl, replacePlaceholders, resourcesBaseOperations } from '../src/utils'
+import { createHeaders, executeRequest, getAuthType, isUrl, replacePlaceholders, resourcesBaseOperations } from '../src/utils'
 import { localStorageMock } from './mocks/localStorageMock'
 
 describe('isUrl function tests', () => {
@@ -175,6 +175,27 @@ describe('createHeaders function tests', () => {
   })
 })
 
+describe('getAuthType function tests', () => {
+  it('Returns the default value if null or undefined is passed as parameter', () => {
+    const defaultValue = 'Bearer'
+
+    expect(getAuthType(null)).toStrictEqual(defaultValue)
+    expect(getAuthType(undefined)).toStrictEqual(defaultValue)
+  })
+
+  it('Returns bearer type if the bearer parameter is passed', () => {
+    const bearerValue = 'Bearer'
+    
+    expect(getAuthType('bearer')).toStrictEqual(bearerValue)
+  })
+
+  it('Returns apikey type if the apikey parameter is passed', () => {
+    const apikeyValue = ''
+    
+    expect(getAuthType('apikey')).toStrictEqual(apikeyValue)
+  })
+})
+
 describe('resourceBaseOperations function tests', () => {
   const accessToken = { key: 'apis-accesToken', value: 'awsomeAccessToken' }
 
@@ -199,11 +220,29 @@ describe('resourceBaseOperations function tests', () => {
         headers: {}
       }
     }
-    expect(resourcesBaseOperations(null, null, null, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+    expect(resourcesBaseOperations(null, null, null, null, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
   })
 
-  it('Returns an object with empty url field and headers object with authentication field', () => {
+  it('Returns an object with empty url field and headers object with default type authentication field', () => {
     const tokenName = accessToken.key
+    const wrongAuthType = 'wrongAuthType'
+    
+    const expectedObject = {
+      url: '',
+      headers: {
+        headers: {
+          authorization: `Bearer ${accessToken.value}`
+        }
+      }
+    }
+
+    expect(resourcesBaseOperations(null, tokenName, null, null, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+    expect(resourcesBaseOperations(null, tokenName, null, wrongAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+  })
+
+  it('Returns an object with empty url field and headers object with bearer type authentication field', () => {
+    const tokenName = accessToken.key
+    const defaultAuthType = 'bearer'
 
     const expectedObject = {
       url: '',
@@ -214,11 +253,44 @@ describe('resourceBaseOperations function tests', () => {
       }
     }
 
-    expect(resourcesBaseOperations(null, tokenName, null, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+    expect(resourcesBaseOperations(null, tokenName, null, defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+  })
+
+  it('Returns an object with empty url field and headers object with apikey type authentication field', () => {
+    const tokenName = accessToken.key
+    const apiKeyAuthType = 'apikey'
+
+    const expectedObject = {
+      url: '',
+      headers: {
+        headers: {
+          authorization: accessToken.value
+        }
+      }
+    }
+
+    expect(resourcesBaseOperations(null, tokenName, null, apiKeyAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+  })
+
+  it('Returns an object with empty url field and headers object with bearer type authentication field', () => {
+    const tokenName = accessToken.key
+    const defaultAuthType = 'bearer'
+
+    const expectedObject = {
+      url: '',
+      headers: {
+        headers: {
+          authorization: `Bearer ${accessToken.value}`
+        }
+      }
+    }
+
+    expect(resourcesBaseOperations(null, tokenName, null, defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
   })
 
   it('Returns an object with empty url field, custom headers and a body object', () => {
     const tokenName = accessToken.key
+    const defaultAuthType = 'bearer'
 
     const body = {
       key: 'value',
@@ -235,11 +307,12 @@ describe('resourceBaseOperations function tests', () => {
       body
     }
 
-    expect(resourcesBaseOperations(null, tokenName, null, { responseType: null, params: null, auth: null, disableAuth: null, body, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+    expect(resourcesBaseOperations(null, tokenName, null, defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body, path: null, customHeaders: null })).toStrictEqual(expectedObject)
   })
 
   it('Returns an object with correct baseUrl taken from resources argument and custom headers', () => {
     const tokenName = accessToken.key
+    const defaultAuthType = 'bearer'
 
     const baseUrl = 'https://baseurl.com'
     const notValidUrl = 'notValidUrl'
@@ -287,10 +360,10 @@ describe('resourceBaseOperations function tests', () => {
       }
     }
 
-    expect(resourcesBaseOperations(resources, tokenName, 'baseUrlResource', { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
-    expect(resourcesBaseOperations(resources, tokenName, notValidUrl, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(failingExpectedObject)
-    expect(resourcesBaseOperations(resources, tokenName, overriddenUrl, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(overridingExpectedObject)
-    expect(resourcesBaseOperations(resources, tokenName, 'baseUrlResource', { responseType: null, params: null, auth: null, disableAuth: null, body: null, path, customHeaders: null })).toStrictEqual(pathExpectedObject)
+    expect(resourcesBaseOperations(resources, tokenName, 'baseUrlResource', defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(expectedObject)
+    expect(resourcesBaseOperations(resources, tokenName, notValidUrl, defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(failingExpectedObject)
+    expect(resourcesBaseOperations(resources, tokenName, overriddenUrl, defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path: null, customHeaders: null })).toStrictEqual(overridingExpectedObject)
+    expect(resourcesBaseOperations(resources, tokenName, 'baseUrlResource', defaultAuthType, { responseType: null, params: null, auth: null, disableAuth: null, body: null, path, customHeaders: null })).toStrictEqual(pathExpectedObject)
   })
 })
 

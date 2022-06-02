@@ -1,15 +1,21 @@
 import axios from 'axios'
 
+// Object that maps the available token authorization types
+const authorizationTypesMap = {
+  bearer: 'Bearer',
+  apikey: ''
+}
+
 // Function that creates and sets up the authorization header with local storage token
-export function createHeaders(params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null) {
-  const token = tokenName ? window.localStorage.getItem(tokenName) : tokenName
+export function createHeaders(params = null, overrideAuthToken = null, disableAuth = null, customHeaders = [], responseType = null, tokenName = null, authType = 'bearer') {
+  const token = tokenName ? window.localStorage.getItem(tokenName) || tokenName : tokenName
 
   const headers = {
     headers: {}
   }
 
   if ((overrideAuthToken || token) && !disableAuth) {
-    headers.headers.authorization = overrideAuthToken || `Bearer ${token}`
+    headers.headers.authorization = overrideAuthToken || `${getAuthType(authType)} ${token}`.trim()
   }
 
   if (customHeaders?.length > 0) {
@@ -70,10 +76,19 @@ export const isUrl = (text = null) => {
   return text && (text.startsWith('http://') || text.startsWith('https://'))
 }
 
+// Function that returns the correct authorization type based on the string passed as parameter
+export const getAuthType = (type) => {
+  if(authorizationTypesMap[type] === '') {
+    return ''
+  }
+  
+  return authorizationTypesMap[type] || authorizationTypesMap.bearer
+}
+
 // function to setup initial parameters for every request
-export const resourcesBaseOperations = (resources, jwtToken, resource, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
+export const resourcesBaseOperations = (resources, jwtToken, resource, authType, { responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = [] }) => {
   // creating request headers
-  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken)
+  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken, authType)
   // base url
   const baseUrl = isUrl(resource) ? resource : resources ? resources[resource] || '' : ''
   // complete url
