@@ -5,22 +5,28 @@ let resources = {}
 let rawUrlsConfig = {}
 let domain = ''
 let jwtToken = null
+let authorizationType = 'bearer'
 
 /**
  * Apis initialization function
  * @param {Object} config Apis configuration object
  * @param {string} config.baseUrl Base URL for all HTTP calls.
  * @param {Object} config.savedUrls URL mapping object.
- * @param {string} [config.jwtTokenName=null] JWT token name to look for in local storage.
- * @param {Object} [config.placeholders=null] Placeholders mapping object.
+ * @param {(string|null)} [config.jwtTokenName=null] JWT token name to look for in local storage.
+ * @param {(string)} [config.authType=bearer] Authentication type.
+ * @param {(string|null)} [config.authToken=null] Authentication token.
+ * @param {(Object|null)} [config.placeholders=null] Placeholders mapping object.
  */
-const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholders = null }) => {
+const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null }) => {
   rawUrlsConfig = savedUrls
   domain = baseUrl
-  const updatedUrls = prepareResources({urlsConfig: savedUrls, baseUrl, placeholders})
+  authorizationType = authType
+  const updatedUrls = prepareResources({ urlsConfig: savedUrls, baseUrl, placeholders })
 
   resources = updatedUrls
-  if (jwtTokenName) {
+  if (authToken) {
+    jwtToken = authToken
+  } else if (jwtTokenName && !authToken) {
     jwtToken = jwtTokenName
   }
 }
@@ -31,7 +37,7 @@ const init = ({ baseUrl = null, jwtTokenName = null, savedUrls = {}, placeholder
  */
 const updatePlaceholders = (placeholders = null) => {
   if (placeholders) {
-    const updatedUrls = prepareResources({urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders})
+    const updatedUrls = prepareResources({ urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders })
     resources = updatedUrls
   }
 }
@@ -42,7 +48,7 @@ const updatePlaceholders = (placeholders = null) => {
  * @returns {Object} Object with response and error for the request
  */
 const getResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'get', url, headers })
   return response
 }
@@ -56,7 +62,7 @@ const postResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'post', url, headers, body })
   return response
 }
@@ -70,7 +76,7 @@ const putResource = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
-  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
+  const { url, headers, body } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'put', url, headers, body })
   return response
 }
@@ -81,7 +87,7 @@ const putResource = async ({ savedUrl, ...options }) => {
  * @returns {Object} Object with response and error for the request
  */
 const deleteResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, options)
+  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers })
   return response
 }
