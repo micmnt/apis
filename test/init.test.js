@@ -14,7 +14,9 @@ describe('init function tests', () => {
     noTrailingSlashKey: '/:noTrailingSlashPlaceholder'
   }
 
-  const currentAuthToken = 'apis-accessToken'
+  const currentAuthToken = 'apisauthtoken'
+
+  const currentAuthTokenName = 'apis-accessToken'
 
   const bearerAuthToken = 'Bearer apis-accessToken'
 
@@ -25,7 +27,7 @@ describe('init function tests', () => {
       baseUrl,
       savedUrls: resources,
       authType: 'apikey',
-      jwtTokenName: currentAuthToken
+      jwtTokenName: currentAuthTokenName
     })
     
     axios.interceptors.request.use(function (config) {
@@ -33,7 +35,7 @@ describe('init function tests', () => {
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
-    expect(currentAuthHeader).toBe(currentAuthToken)
+    expect(currentAuthHeader).toBe(currentAuthTokenName)
   })
 
   it('Returns Bearer as Auth Type if no authType is passed', async () => {
@@ -42,7 +44,7 @@ describe('init function tests', () => {
     api.init({
       baseUrl,
       savedUrls: resources,
-      jwtTokenName: currentAuthToken
+      jwtTokenName: currentAuthTokenName
     })
     
     axios.interceptors.request.use(function (config) {
@@ -60,7 +62,7 @@ describe('init function tests', () => {
       baseUrl,
       savedUrls: resources,
       authType: 'wrongAuthType',
-      jwtTokenName: currentAuthToken
+      jwtTokenName: currentAuthTokenName
     })
     
     axios.interceptors.request.use(function (config) {
@@ -70,5 +72,77 @@ describe('init function tests', () => {
     await api.get({ savedUrl: 'key' })
     expect(currentAuthHeader).toBe(bearerAuthToken)
   })
+
+  it('Returns bearer authToken if is passed as param', async () => {
+    let currentAuthHeader = null
+
+    api.init({
+      baseUrl,
+      savedUrls: resources,
+      authToken: currentAuthToken
+    })
+    
+    axios.interceptors.request.use(function (config) {
+      currentAuthHeader = config?.headers?.authorization || null
+    }, undefined)
+
+    await api.get({ savedUrl: 'key' })
+    expect(currentAuthHeader).toBe(`Bearer ${currentAuthToken}`)
+  })
+
+  it('Returns apikey authToken if is passed as param', async () => {
+    let currentAuthHeader = null
+
+    api.init({
+      baseUrl,
+      authType: 'apikey',
+      savedUrls: resources,
+      authToken: currentAuthToken
+    })
+    
+    axios.interceptors.request.use(function (config) {
+      currentAuthHeader = config?.headers?.authorization || null
+    }, undefined)
+
+    await api.get({ savedUrl: 'key' })
+    expect(currentAuthHeader).toBe(currentAuthToken)
+  })
+ 
+  it('Returns bearer authToken if is passed as param with jwtTokenName', async () => {
+    let currentAuthHeader = null
+
+    api.init({
+      baseUrl,
+      savedUrls: resources,
+      jwtTokenName: currentAuthTokenName,
+      authToken: currentAuthToken
+    })
+    
+    axios.interceptors.request.use(function (config) {
+      currentAuthHeader = config?.headers?.authorization || null
+    }, undefined)
+
+    await api.get({ savedUrl: 'key' })
+    expect(currentAuthHeader).toBe(`Bearer ${currentAuthToken}`)
+  })
+
+  it('Returns apikey authToken if is passed as param with jwtTokenName', async () => {
+    let currentAuthHeader = null
+
+    api.init({
+      baseUrl,
+      authType: 'apikey',
+      savedUrls: resources,
+      jwtTokenName: currentAuthTokenName,
+      authToken: currentAuthToken
+    })
+    
+    axios.interceptors.request.use(function (config) {
+      currentAuthHeader = config?.headers?.authorization || null
+    }, undefined)
+
+    await api.get({ savedUrl: 'key' })
+    expect(currentAuthHeader).toBe(currentAuthToken)
+  }) 
 
 })
