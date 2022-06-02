@@ -14,6 +14,7 @@ let authorizationType = 'bearer'
  * @param {Object} config.savedUrls URL mapping object.
  * @param {(string|null)} [config.jwtTokenName=null] JWT token name to look for in local storage.
  * @param {(string)} [config.authType=bearer] Authentication type.
+ * @param {(string|null)} [config.authToken=null] Authentication token.
  * @param {(Object|null)} [config.placeholders=null] Placeholders mapping object.
  */
 const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null }) => {

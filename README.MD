@@ -5,6 +5,7 @@ Apis is a small library based on [Axios](https://axios-http.com/) to facilitate 
 ## Index
 
 - [Usage](#usage)
+- [Auth Type and Auth Tokens ](#auth-type-and-auth-tokens)
 - [Auth Token override](#auth-token-override)
 - [URL placeholders update](#url-placeholders-update)
 - [Passing GET parameters](#passing-get-parameters)
@@ -89,6 +90,59 @@ In this usage example, Apis is used to create a todo list app
   }
 ```
 
+## Auth Type and Auth Tokens
+
+Apis supports two types of authentication during the initialization:
+1. **Bearer Token**: The default authentication type, where the Bearer Token is added to the request headers.
+2. **Custom Auth**: The custom authentication type, where the request headers are updated with the custom auth headers.
+
+```javascript
+  const baseApiUrl = 'https://mytodo.app'
+  
+  // URL mapping object to make requests
+  // All the object items values are concatenated to the baseUrl
+  const urls = {
+    'todo': '/todo' 
+    'all': 'todo/all'
+  }
+  
+  // Apis Initialization
+  api.init({
+    baseUrl: baseApiUrl,
+    savedUrls: urls,
+    jwtTokenName: 'jwt-token-name',
+    authType: 'apikey' // (bearer | apikey) default type is 'bearer'
+  })
+```
+Based on the `authType` value, the authorization headers could be:
+  - `authType === 'bearer' : Bearer <token>`
+  - `authType === 'apikey' : <token>`
+  - `authType === (null | undefined | <everythingelse>) : Bearer <token>`
+
+Apis allows you to choose if you want to use an auth token stored in the local-storage, or directly injected in the init function.
+You can do this with the `authToken` and `jwtTokenName` parameters
+
+- using `jwtTokenName` you can pass the name of the token in the local-storage
+- using `authToken` you can directly inject the token in the init function
+
+**Warning:** If both params are used, the `authToken` will be used.
+
+### AuthToken param usage
+Let's use a `.env` file with the token
+```
+  TOKEN=<mysecrettoken>
+```
+
+Then in Apis initialization function you can directly inject the token
+
+```javascript
+  api.init({
+    baseUrl: baseApiUrl,
+    savedUrls: urls,
+    authType: 'apikey',
+    authToken: process.env.TOKEN // This token is taken directly from your .env file
+  })
+```
 ## Auth Token override
 
 Apis allows for every request, when necessary, to override the automatically added token, with a new one
@@ -227,6 +281,8 @@ Apis parameters and functions documentation
 | --------- | -------------- | ----------- | ---- | --- |
 | baseUrl   |  `null`        | `https://api.mytodos.com` | Base URL for all the requests | :white_check_mark: |
 | jwtTokenName | `null`      | `my-todos-accessToken` | JWT token name to look for in local storage | :x: |
+| authType | `bearer`      | `bearer` &#124; `apikey` | Auth Type to use for the authorization header | :x: |
+| authToken | `null`      | `myawesomeauthtoken` | Auth Token to use in the Apis initialization | :x: |
 | savedUrls | `{}`           | `{todo: '/:listId/todo'}` | Configuration Object containing the URL mapping to make HTTP requests | :white_check_mark: |
 | placeholders | `null`      | `{listId: '/lists/1'}` | Object containing the placeholders values to switch in URLs | :x: |
 
