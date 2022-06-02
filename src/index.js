@@ -16,14 +16,16 @@ let authorizationType = 'bearer'
  * @param {(string)} [config.authType=bearer] Authentication type.
  * @param {(Object|null)} [config.placeholders=null] Placeholders mapping object.
  */
-const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', savedUrls = {}, placeholders = null }) => {
+const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null }) => {
   rawUrlsConfig = savedUrls
   domain = baseUrl
   authorizationType = authType
-  const updatedUrls = prepareResources({urlsConfig: savedUrls, baseUrl, placeholders})
+  const updatedUrls = prepareResources({ urlsConfig: savedUrls, baseUrl, placeholders })
 
   resources = updatedUrls
-  if (jwtTokenName) {
+  if (authToken) {
+    jwtToken = authToken
+  } else if (jwtTokenName && !authToken) {
     jwtToken = jwtTokenName
   }
 }
@@ -34,7 +36,7 @@ const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', savedU
  */
 const updatePlaceholders = (placeholders = null) => {
   if (placeholders) {
-    const updatedUrls = prepareResources({urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders})
+    const updatedUrls = prepareResources({ urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders })
     resources = updatedUrls
   }
 }
