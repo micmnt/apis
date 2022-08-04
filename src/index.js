@@ -87,8 +87,10 @@ const putResource = async ({ savedUrl, ...options }) => {
  * @returns {Object} Object with response and error for the request
  */
 const deleteResource = async ({ savedUrl, ...options }) => {
-  const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
-  const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers })
+  const { url, headers, body = null } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
+  // Axios expects to have a body with a 'data' key for DELETE requests with the actual data to pass, so we need to add it if it's not there
+  const normalizedBody = body ? body.data ? body : { data: { ...body } } : null
+  const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers, body: normalizedBody })
   return response
 }
 

@@ -185,13 +185,13 @@ describe('getAuthType function tests', () => {
 
   it('Returns bearer type if the bearer parameter is passed', () => {
     const bearerValue = 'Bearer'
-    
+
     expect(getAuthType('bearer')).toStrictEqual(bearerValue)
   })
 
   it('Returns apikey type if the apikey parameter is passed', () => {
     const apikeyValue = ''
-    
+
     expect(getAuthType('apikey')).toStrictEqual(apikeyValue)
   })
 })
@@ -226,7 +226,7 @@ describe('resourceBaseOperations function tests', () => {
   it('Returns an object with empty url field and headers object with default type authentication field', () => {
     const tokenName = accessToken.key
     const wrongAuthType = 'wrongAuthType'
-    
+
     const expectedObject = {
       url: '',
       headers: {
@@ -369,6 +369,14 @@ describe('resourceBaseOperations function tests', () => {
 
 describe('executeRequest function tests', () => {
   const errorMessage = 'Networkkkk Error'
+  const deleteFullResponse = {
+    status: 200,
+    data: null
+  }
+  const deleteResponseWithNoData = {
+    status: 200
+  }
+
   const fullResponse = {
     status: 200,
     data: {
@@ -380,6 +388,9 @@ describe('executeRequest function tests', () => {
     axios.get.mockReset()
     if (axios.post.mockReset) {
       axios.post.mockReset()
+    }
+    if (axios.delete.mockReset) {
+      axios.delete.mockReset()
     }
   })
 
@@ -399,17 +410,44 @@ describe('executeRequest function tests', () => {
 
     axios.get = jest.fn().mockResolvedValue(fullResponse)
     axios.post = jest.fn().mockResolvedValue(fullResponse)
+    axios.delete = jest.fn().mockResolvedValue(fullResponse)
 
     const fullExpectedResponse = { data: fullResponse, error: null }
     const expectedResponse = { data: fullResponse.data, error: null }
+    const deleteResponse = { data: null, error: null }
+
     const fullRequestResponse = await executeRequest({ fullResponse: true, url: baseUrl, headers: {} })
     const requestResponse = await executeRequest({ url: baseUrl, headers: {} })
     const postExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'post', body: fullResponse })
 
+    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'delete', body: { key: 'value' } })
+    const deleteWithDataBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'delete', body: fullResponse })
+
+
     expect(fullExpectedResponse).toStrictEqual(fullRequestResponse)
     expect(expectedResponse).toStrictEqual(requestResponse)
     expect(expectedResponse).toStrictEqual(postExpectedResponse)
+    expect(expectedResponse).toStrictEqual(deleteWithRandomBodyExpectedResponse)
+    expect(expectedResponse).toStrictEqual(deleteWithDataBodyExpectedResponse)
+
     expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
     expect(axios.post).toHaveBeenCalledWith(baseUrl, fullResponse, {})
+    expect(axios.delete).toHaveBeenCalledWith(baseUrl, { key: 'value' }, {})
+
+
+    axios.delete.mockReset()
+
+    axios.delete = jest.fn().mockResolvedValue(deleteFullResponse)
+    const deleteExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'delete' })
+    expect(deleteExpectedResponse).toStrictEqual(deleteResponse)
+    expect(axios.delete).toHaveBeenCalledWith(baseUrl, {})
+
+    axios.delete.mockReset()
+
+    axios.delete = jest.fn().mockResolvedValue(deleteResponseWithNoData)
+    const deleteExpectedResponseWithNoData = await executeRequest({ url: baseUrl, headers: {}, method: 'delete' })
+    expect(deleteExpectedResponseWithNoData).toStrictEqual(deleteResponse)
+    expect(axios.delete).toHaveBeenCalledWith(baseUrl, {})
+
   })
 })
