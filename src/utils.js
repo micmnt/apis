@@ -103,7 +103,9 @@ export const executeRequest = async ({ fullResponse = false, method = 'get', url
   try {
     const resourceResponse = body ? await axios[method](url, body, headers) : await axios[method](url, headers)
     const { data: response, ...rest } = resourceResponse
-    baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
+    if(response) {
+      baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
+    }
   } catch (error) {
     baseResponse.error = error
   }
