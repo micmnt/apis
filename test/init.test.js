@@ -36,6 +36,9 @@ describe('init function tests', () => {
 
     await api.get({ savedUrl: 'key' })
     expect(currentAuthHeader).toBe(currentAuthTokenName)
+
+    await api.delete({ savedUrl: 'key', body: {key: 'deleteValue'} })
+    expect(currentAuthHeader).toBe(currentAuthTokenName)
   })
 
   it('Returns Bearer as Auth Type if no authType is passed', async () => {

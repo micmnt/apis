@@ -78,10 +78,10 @@ export const isUrl = (text = null) => {
 
 // Function that returns the correct authorization type based on the string passed as parameter
 export const getAuthType = (type) => {
-  if(authorizationTypesMap[type] === '') {
+  if (authorizationTypesMap[type] === '') {
     return ''
   }
-  
+
   return authorizationTypesMap[type] || authorizationTypesMap.bearer
 }
 
@@ -101,9 +101,9 @@ export const executeRequest = async ({ fullResponse = false, method = 'get', url
   // Corpo di base della risposta
   const baseResponse = { data: null, error: null }
   try {
-    const resourceResponse = body ? await axios[method](url, body, headers) : await axios[method](url, headers)
+    const resourceResponse = body ? method === 'delete' ? await axios[method](url, { ...headers, body }) : await axios[method](url, body, headers) : await axios[method](url, headers)
     const { data: response, ...rest } = resourceResponse
-    if(response) {
+    if (response) {
       baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
     }
   } catch (error) {
