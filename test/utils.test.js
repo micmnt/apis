@@ -420,7 +420,7 @@ describe('executeRequest function tests', () => {
     const requestResponse = await executeRequest({ url: baseUrl, headers: {} })
     const postExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'post', body: fullResponse })
 
-    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: {authorization: 'Bearer token'}, method: 'delete', body: { key: 'value' } })
+    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: {authorization: 'Bearer token'}, method: 'delete', body: { data: {key: 'value'} } })
 
 
     expect(fullExpectedResponse).toStrictEqual(fullRequestResponse)
@@ -430,7 +430,7 @@ describe('executeRequest function tests', () => {
 
     expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
     expect(axios.post).toHaveBeenCalledWith(baseUrl, fullResponse, {})
-    expect(axios.delete).toHaveBeenCalledWith(baseUrl, { authorization: 'Bearer token', body: { key: 'value' } })
+    expect(axios.delete).toHaveBeenCalledWith(baseUrl, { authorization: 'Bearer token', data: { key: 'value' } })
 
 
     axios.delete.mockReset()

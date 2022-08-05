@@ -101,7 +101,11 @@ export const executeRequest = async ({ fullResponse = false, method = 'get', url
   // Corpo di base della risposta
   const baseResponse = { data: null, error: null }
   try {
-    const resourceResponse = body ? method === 'delete' ? await axios[method](url, { ...headers, body }) : await axios[method](url, body, headers) : await axios[method](url, headers)
+    const resourceResponse = body
+      ? method === 'delete'
+        ? await axios[method](url, { ...headers, ...body })
+        : await axios[method](url, body, headers)
+      : await axios[method](url, headers)
     const { data: response, ...rest } = resourceResponse
     if (response) {
       baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
