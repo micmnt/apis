@@ -385,7 +385,6 @@ describe('executeRequest function tests', () => {
   }
 
   afterEach(() => {
-    axios.interceptors.response.clear()
     axios.get.mockReset()
     if (axios.post.mockReset) {
       axios.post.mockReset()
@@ -453,37 +452,51 @@ describe('executeRequest function tests', () => {
   it('Receives errorInterceptor correctly as a param if its a function', async () => {
     const baseUrl = 'https://baseurl.com'
 
-    const errorInterceptorFunction = (error) => 'hello'
+    let valueToBeChanged = null
+
+    const errorInterceptorFunction = (error) => {
+      valueToBeChanged = error.message
+    }
 
     axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
     const expectedResponse = { data: null, error: new Error(errorMessage) }
-    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: errorInterceptorFunction })
 
-    expect(axios.interceptors.response.handlers.length).toStrictEqual(1)
+    expect(valueToBeChanged).toStrictEqual(null)
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: errorInterceptorFunction })
+    expect(valueToBeChanged).toStrictEqual('Networkkkk Error')
+
     expect(requestResponse).toStrictEqual(expectedResponse)
     expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
   })
 
   it('Receives errorInterceptor correctly as a param if its null', async () => {
     const baseUrl = 'https://baseurl.com'
-    
+
+    let valueToBeChanged = null
+
     axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
     const expectedResponse = { data: null, error: new Error(errorMessage) }
-    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: null })
 
-    expect(axios.interceptors.response.handlers.length).toStrictEqual(0)
+    expect(valueToBeChanged).toStrictEqual(null)
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: null })
+    expect(valueToBeChanged).toStrictEqual(null)
+
     expect(requestResponse).toStrictEqual(expectedResponse)
     expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
   })
 
   it('Receives errorInterceptor correctly as a param if its not a function or null', async () => {
     const baseUrl = 'https://baseurl.com'
-    
+
+    let valueToBeChanged = null
+
     axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
     const expectedResponse = { data: null, error: new Error(errorMessage) }
-    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: 'ImNotAFunction' })
 
-    expect(axios.interceptors.response.handlers.length).toStrictEqual(0)
+    expect(valueToBeChanged).toStrictEqual(null)
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: 'notAFunction' })
+    expect(valueToBeChanged).toStrictEqual(null)
+
     expect(requestResponse).toStrictEqual(expectedResponse)
     expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
   })

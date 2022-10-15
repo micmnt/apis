@@ -100,12 +100,6 @@ export const resourcesBaseOperations = (resources, jwtToken, resource, authType,
 export const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null, errorInterceptor = null }) => {
   // Corpo di base della risposta
   const baseResponse = { data: null, error: null }
-  if (!!errorInterceptor && typeof errorInterceptor === 'function') {
-    axios.interceptors.response.use(
-      (response) => response,
-      (error) => errorInterceptor(error)
-    )
-  }
 
   try {
     const resourceResponse = body
@@ -118,6 +112,9 @@ export const executeRequest = async ({ fullResponse = false, method = 'get', url
       baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
     }
   } catch (error) {
+    if (errorInterceptor && typeof errorInterceptor === 'function') {
+      errorInterceptor(error)
+    }
     baseResponse.error = error
   }
 

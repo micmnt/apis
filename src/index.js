@@ -17,7 +17,7 @@ let errorInterceptorFunc = null
  * @param {(string)} [config.authType=bearer] Authentication type.
  * @param {(string|null)} [config.authToken=null] Authentication token.
  * @param {(Object|null)} [config.placeholders=null] Placeholders mapping object.
- * @param {(Function|null)} [config.errorInterceptor=null] Axios error interceptor function.
+ * @param {(Function|null)} [config.errorInterceptor=null] Function to trigger on request error.
  */
 const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null, errorInterceptor = null }) => {
   rawUrlsConfig = savedUrls
