@@ -385,6 +385,7 @@ describe('executeRequest function tests', () => {
   }
 
   afterEach(() => {
+    axios.interceptors.response.clear()
     axios.get.mockReset()
     if (axios.post.mockReset) {
       axios.post.mockReset()
@@ -420,7 +421,7 @@ describe('executeRequest function tests', () => {
     const requestResponse = await executeRequest({ url: baseUrl, headers: {} })
     const postExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'post', body: fullResponse })
 
-    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: {authorization: 'Bearer token'}, method: 'delete', body: { data: {key: 'value'} } })
+    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: { authorization: 'Bearer token' }, method: 'delete', body: { data: { key: 'value' } } })
 
 
     expect(fullExpectedResponse).toStrictEqual(fullRequestResponse)
@@ -447,5 +448,43 @@ describe('executeRequest function tests', () => {
     expect(deleteExpectedResponseWithNoData).toStrictEqual(deleteResponse)
     expect(axios.delete).toHaveBeenCalledWith(baseUrl, {})
 
+  })
+
+  it('Receives errorInterceptor correctly as a param if its a function', async () => {
+    const baseUrl = 'https://baseurl.com'
+
+    const errorInterceptorFunction = (error) => 'hello'
+
+    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    const expectedResponse = { data: null, error: new Error(errorMessage) }
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: errorInterceptorFunction })
+
+    expect(axios.interceptors.response.handlers.length).toStrictEqual(1)
+    expect(requestResponse).toStrictEqual(expectedResponse)
+    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
+  })
+
+  it('Receives errorInterceptor correctly as a param if its null', async () => {
+    const baseUrl = 'https://baseurl.com'
+    
+    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    const expectedResponse = { data: null, error: new Error(errorMessage) }
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: null })
+
+    expect(axios.interceptors.response.handlers.length).toStrictEqual(0)
+    expect(requestResponse).toStrictEqual(expectedResponse)
+    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
+  })
+
+  it('Receives errorInterceptor correctly as a param if its not a function or null', async () => {
+    const baseUrl = 'https://baseurl.com'
+    
+    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    const expectedResponse = { data: null, error: new Error(errorMessage) }
+    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: 'ImNotAFunction' })
+
+    expect(axios.interceptors.response.handlers.length).toStrictEqual(0)
+    expect(requestResponse).toStrictEqual(expectedResponse)
+    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
   })
 })

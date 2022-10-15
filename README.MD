@@ -285,6 +285,7 @@ Apis parameters and functions documentation
 | authToken | `null`      | `myawesomeauthtoken` | Auth Token to use in the Apis initialization | :x: |
 | savedUrls | `{}`           | `{todo: '/:listId/todo'}` | Configuration Object containing the URL mapping to make HTTP requests | :white_check_mark: |
 | placeholders | `null`      | `{listId: '/lists/1'}` | Object containing the placeholders values to switch in URLs | :x: |
+| errorInterceptor | `null`      | `(error) => {return error.toJSON()}` | Function to pass to response axios interceptors | :x: |
 
 
 > `api.updatePlaceholders(placeholders = null)`
