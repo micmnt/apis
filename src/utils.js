@@ -97,9 +97,16 @@ export const resourcesBaseOperations = (resources, jwtToken, resource, authType,
 }
 
 // Function with HTTP request's HTTP method, url, headers and body passed as arguments, that returns an object with 'data' and 'error' keys
-export const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null }) => {
+export const executeRequest = async ({ fullResponse = false, method = 'get', url, headers, body = null, errorInterceptor = null }) => {
   // Corpo di base della risposta
   const baseResponse = { data: null, error: null }
+  if (!!errorInterceptor && typeof errorInterceptor === 'function') {
+    axios.interceptors.response.use(
+      (response) => response,
+      (error) => errorInterceptor(error)
+    )
+  }
+
   try {
     const resourceResponse = body
       ? method === 'delete'
