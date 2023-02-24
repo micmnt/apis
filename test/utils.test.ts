@@ -5,6 +5,11 @@
 import axios from 'axios'
 import { createHeaders, executeRequest, getAuthType, isUrl, replacePlaceholders, resourcesBaseOperations } from '../src/utils'
 import { localStorageMock } from './mocks/localStorageMock'
+import { InterceptorFunction } from '../src/types'
+
+// Mock jest and set the type
+jest.mock('axios')
+const mockedAxios = axios as jest.Mocked<typeof axios>
 
 describe('isUrl function tests', () => {
   it('Returns null if text is not passed', () => {
@@ -111,9 +116,9 @@ describe('createHeaders function tests', () => {
       headers: {}
     }
 
-    expect(createHeaders(null, null, null, [null, null], null, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(null, null, null, [undefined, undefined], null, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(null, null, null, ['string1', 'string2'], null, null)).toStrictEqual(expectedObject)
+    expect(createHeaders(null, null, null, [], null, null)).toStrictEqual(expectedObject)
+    expect(createHeaders(null, null, null, [{}], null, null)).toStrictEqual(expectedObject)
+    expect(createHeaders(null, null, null, [{}, {}], null, null)).toStrictEqual(expectedObject)
     expect(createHeaders(null, null, null, [{ prop1: 'value1', prop2: 'value2' }], null, null)).toStrictEqual(expectedObject)
   })
 
@@ -128,17 +133,6 @@ describe('createHeaders function tests', () => {
     expect(createHeaders(null, null, null, customHeaders, null, null)).toStrictEqual(expectedObject)
   })
 
-  it('Returns an empty object if custom params passed as option are not of type object', () => {
-    const expectedObject = {
-      headers: {}
-    }
-
-    expect(createHeaders('stringParam', null, null, null, null, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(3, null, null, null, null, null)).toStrictEqual(expectedObject)
-    expect(createHeaders([3, 'arrayParam'], null, null, null, null, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(true, null, null, null, null, null)).toStrictEqual(expectedObject)
-  })
-
   it('Returns an object with custom params object equal to the passed one', () => {
     const customParams = {
       paramKey: 'paramValue',
@@ -151,17 +145,6 @@ describe('createHeaders function tests', () => {
     }
 
     expect(createHeaders(customParams, null, null, null, null, null)).toStrictEqual(expectedObject)
-  })
-
-  it('Returns an empty object if passed responseType is not a string', () => {
-    const expectedObject = {
-      headers: {}
-    }
-
-    expect(createHeaders(null, null, null, null, 3, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(null, null, null, null, { key: 'value' }, null)).toStrictEqual(expectedObject)
-    expect(createHeaders(null, null, null, null, ['value1', 'value2'], null)).toStrictEqual(expectedObject)
-    expect(createHeaders(null, null, null, null, true, null)).toStrictEqual(expectedObject)
   })
 
   it('Returns an object with custom responseType if passed responseType is a string', () => {
@@ -370,47 +353,41 @@ describe('resourceBaseOperations function tests', () => {
 describe('executeRequest function tests', () => {
   const errorMessage = 'Networkkkk Error'
   const deleteFullResponse = {
-    status: 200,
+    status: '200',
     data: null
   }
   const deleteResponseWithNoData = {
-    status: 200
+    status: '200'
   }
 
   const fullResponse = {
-    status: 200,
-    data: {
-      key: 'value'
-    }
+    status: '200',
+    data: 'value'
   }
 
   afterEach(() => {
-    axios.get.mockReset()
-    if (axios.post.mockReset) {
-      axios.post.mockReset()
-    }
-    if (axios.delete.mockReset) {
-      axios.delete.mockReset()
-    }
+    mockedAxios.get.mockReset()
+    mockedAxios.post.mockReset()
+    mockedAxios.delete.mockReset()
   })
 
   it('Returns an object with null data and error object', async () => {
     const baseUrl = 'https://baseurl.com'
 
-    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
 
     const expectedResponse = { data: null, error: new Error(errorMessage) }
-    const requestResponse = await executeRequest({ url: baseUrl, headers: {} })
+    const requestResponse = await executeRequest({ url: baseUrl, headers: { headers: {} } })
     expect(requestResponse).toStrictEqual(expectedResponse)
-    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, { headers: {} })
   })
 
   it('Returns an object with correct response data and null error object', async () => {
     const baseUrl = 'https://baseurl.com'
 
-    axios.get = jest.fn().mockResolvedValue(fullResponse)
-    axios.post = jest.fn().mockResolvedValue(fullResponse)
-    axios.delete = jest.fn().mockResolvedValue(fullResponse)
+    mockedAxios.get = jest.fn().mockResolvedValue(fullResponse)
+    mockedAxios.post = jest.fn().mockResolvedValue(fullResponse)
+    mockedAxios.delete = jest.fn().mockResolvedValue(fullResponse)
 
     const fullExpectedResponse = { data: fullResponse, error: null }
     const expectedResponse = { data: fullResponse.data, error: null }
@@ -420,7 +397,7 @@ describe('executeRequest function tests', () => {
     const requestResponse = await executeRequest({ url: baseUrl, headers: {} })
     const postExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'post', body: fullResponse })
 
-    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: { authorization: 'Bearer token' }, method: 'delete', body: { data: { key: 'value' } } })
+    const deleteWithRandomBodyExpectedResponse = await executeRequest({ url: baseUrl, headers: { headers: { authorization: 'Bearer token' } }, method: 'delete', body: { data: 'value' } })
 
 
     expect(fullExpectedResponse).toStrictEqual(fullRequestResponse)
@@ -428,37 +405,38 @@ describe('executeRequest function tests', () => {
     expect(expectedResponse).toStrictEqual(postExpectedResponse)
     expect(expectedResponse).toStrictEqual(deleteWithRandomBodyExpectedResponse)
 
-    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
-    expect(axios.post).toHaveBeenCalledWith(baseUrl, fullResponse, {})
-    expect(axios.delete).toHaveBeenCalledWith(baseUrl, { authorization: 'Bearer token', data: { key: 'value' } })
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl, fullResponse, {})
+    expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl, { headers: { authorization: 'Bearer token' }, data: 'value' })
 
 
-    axios.delete.mockReset()
+    mockedAxios.delete.mockReset()
 
-    axios.delete = jest.fn().mockResolvedValue(deleteFullResponse)
+    mockedAxios.delete = jest.fn().mockResolvedValue(deleteFullResponse)
     const deleteExpectedResponse = await executeRequest({ url: baseUrl, headers: {}, method: 'delete' })
     expect(deleteExpectedResponse).toStrictEqual(deleteResponse)
-    expect(axios.delete).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl, {})
 
-    axios.delete.mockReset()
+    mockedAxios.delete.mockReset()
 
-    axios.delete = jest.fn().mockResolvedValue(deleteResponseWithNoData)
+    mockedAxios.delete = jest.fn().mockResolvedValue(deleteResponseWithNoData)
     const deleteExpectedResponseWithNoData = await executeRequest({ url: baseUrl, headers: {}, method: 'delete' })
     expect(deleteExpectedResponseWithNoData).toStrictEqual(deleteResponse)
-    expect(axios.delete).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl, {})
 
   })
 
   it('Receives errorInterceptor correctly as a param if its a function', async () => {
     const baseUrl = 'https://baseurl.com'
 
-    let valueToBeChanged = null
+    let valueToBeChanged: string | null = null
 
-    const errorInterceptorFunction = (error) => {
+    const errorInterceptorFunction: InterceptorFunction = (error) => {
       valueToBeChanged = error.message
+      return {}
     }
 
-    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
     const expectedResponse = { data: null, error: new Error(errorMessage) }
 
     expect(valueToBeChanged).toStrictEqual(null)
@@ -466,7 +444,7 @@ describe('executeRequest function tests', () => {
     expect(valueToBeChanged).toStrictEqual('Networkkkk Error')
 
     expect(requestResponse).toStrictEqual(expectedResponse)
-    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, {})
   })
 
   it('Receives errorInterceptor correctly as a param if its null', async () => {
@@ -474,7 +452,7 @@ describe('executeRequest function tests', () => {
 
     let valueToBeChanged = null
 
-    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
     const expectedResponse = { data: null, error: new Error(errorMessage) }
 
     expect(valueToBeChanged).toStrictEqual(null)
@@ -482,22 +460,6 @@ describe('executeRequest function tests', () => {
     expect(valueToBeChanged).toStrictEqual(null)
 
     expect(requestResponse).toStrictEqual(expectedResponse)
-    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
-  })
-
-  it('Receives errorInterceptor correctly as a param if its not a function or null', async () => {
-    const baseUrl = 'https://baseurl.com'
-
-    let valueToBeChanged = null
-
-    axios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
-    const expectedResponse = { data: null, error: new Error(errorMessage) }
-
-    expect(valueToBeChanged).toStrictEqual(null)
-    const requestResponse = await executeRequest({ url: baseUrl, headers: {}, errorInterceptor: 'notAFunction' })
-    expect(valueToBeChanged).toStrictEqual(null)
-
-    expect(requestResponse).toStrictEqual(expectedResponse)
-    expect(axios.get).toHaveBeenCalledWith(baseUrl, {})
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, {})
   })
 })

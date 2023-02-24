@@ -5,9 +5,9 @@
 import axios from 'axios'
 import api from '../src/index'
 
-describe('init function tests', () => {
+const baseURL = 'https://baseurl.com'
 
-  const baseUrl = 'https://baseurl.com'
+describe('init function tests', () => {
 
   const resources = {
     key: '/:placeholder/value',
@@ -24,20 +24,22 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       savedUrls: resources,
       authType: 'apikey',
       jwtTokenName: currentAuthTokenName
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
     expect(currentAuthHeader).toBe(currentAuthTokenName)
 
-    await api.delete({ savedUrl: 'key', body: {key: 'deleteValue'} })
+    await api.delete({ savedUrl: 'key', body: { key: 'deleteValue' } })
     expect(currentAuthHeader).toBe(currentAuthTokenName)
   })
 
@@ -45,13 +47,15 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       savedUrls: resources,
       jwtTokenName: currentAuthTokenName
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
@@ -62,14 +66,16 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       savedUrls: resources,
       authType: 'wrongAuthType',
       jwtTokenName: currentAuthTokenName
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
@@ -80,13 +86,15 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       savedUrls: resources,
       authToken: currentAuthToken
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
@@ -97,32 +105,36 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       authType: 'apikey',
       savedUrls: resources,
       authToken: currentAuthToken
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
     expect(currentAuthHeader).toBe(currentAuthToken)
   })
- 
+
   it('Returns bearer authToken if is passed as param with jwtTokenName', async () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       savedUrls: resources,
       jwtTokenName: currentAuthTokenName,
       authToken: currentAuthToken
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
@@ -133,19 +145,21 @@ describe('init function tests', () => {
     let currentAuthHeader = null
 
     api.init({
-      baseUrl,
+      baseUrl: baseURL,
       authType: 'apikey',
       savedUrls: resources,
       jwtTokenName: currentAuthTokenName,
       authToken: currentAuthToken
     })
-    
+
     axios.interceptors.request.use(function (config) {
       currentAuthHeader = config?.headers?.authorization || null
+
+      return config
     }, undefined)
 
     await api.get({ savedUrl: 'key' })
     expect(currentAuthHeader).toBe(currentAuthToken)
-  }) 
+  })
 
 })

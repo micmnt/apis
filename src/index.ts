@@ -1,12 +1,14 @@
+import { InitFunction, InterceptorFunction, IKeyStringMap, ResourceFunction } from './types'
 import { resourcesBaseOperations, executeRequest, prepareResources } from './utils'
 
+
 /* Library created to simplify making of http requests */
-let resources = {}
-let rawUrlsConfig = {}
-let domain = ''
-let jwtToken = null
-let authorizationType = 'bearer'
-let errorInterceptorFunc = null
+let resources: IKeyStringMap = {}
+let rawUrlsConfig: IKeyStringMap = {}
+let domain: string | null = ''
+let jwtToken: string | null = null
+let authorizationType: string = 'bearer'
+let errorInterceptorFunc: InterceptorFunction | null = null
 
 /**
  * Apis initialization function
@@ -19,7 +21,7 @@ let errorInterceptorFunc = null
  * @param {(Object|null)} [config.placeholders=null] Placeholders mapping object.
  * @param {(Function|null)} [config.errorInterceptor=null] Function to trigger on request error.
  */
-const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null, errorInterceptor = null }) => {
+const init: InitFunction = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authToken = null, savedUrls = {}, placeholders = null, errorInterceptor = null }) => {
   rawUrlsConfig = savedUrls
   domain = baseUrl
   authorizationType = authType
@@ -38,7 +40,7 @@ const init = ({ baseUrl = null, jwtTokenName = null, authType = 'bearer', authTo
  * Updating placeholders function
  * @param {Object} placeholders Placeholders mapping object.
  */
-const updatePlaceholders = (placeholders = null) => {
+const updatePlaceholders = (placeholders: IKeyStringMap | null = null) => {
   if (placeholders) {
     const updatedUrls = prepareResources({ urlsConfig: rawUrlsConfig, baseUrl: domain, placeholders })
     resources = updatedUrls
@@ -50,7 +52,7 @@ const updatePlaceholders = (placeholders = null) => {
  * @param {Object} config Configuration object for GET requests
  * @returns {Object} Object with response and error for the request
  */
-const getResource = async ({ savedUrl, ...options }) => {
+const getResource: ResourceFunction = async ({ savedUrl, ...options }) => {
   const { url, headers } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
   const response = await executeRequest({ fullResponse: options.fullResponse, method: 'get', url, headers, errorInterceptor: errorInterceptorFunc })
   return response
@@ -61,7 +63,7 @@ const getResource = async ({ savedUrl, ...options }) => {
  * @param {Object} config Configuration object for POST requests
  * @returns {Object} Object with response and error for the request
  */
-const postResource = async ({ savedUrl, ...options }) => {
+const postResource: ResourceFunction = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
@@ -75,7 +77,7 @@ const postResource = async ({ savedUrl, ...options }) => {
  * @param {Object} config Configuration object for PUT requests
  * @returns {Object} Object with response and error for the request
  */
-const putResource = async ({ savedUrl, ...options }) => {
+const putResource: ResourceFunction = async ({ savedUrl, ...options }) => {
   if (!options.body) {
     options.body = {}
   }
@@ -89,11 +91,9 @@ const putResource = async ({ savedUrl, ...options }) => {
  * @param {Object} config Configuration object for DELETE requests
  * @returns {Object} Object with response and error for the request
  */
-const deleteResource = async ({ savedUrl, ...options }) => {
+const deleteResource: ResourceFunction = async ({ savedUrl, ...options }) => {
   const { url, headers, body = null } = resourcesBaseOperations(resources, jwtToken, savedUrl, authorizationType, options)
-  // Axios expects to have a body with a 'data' key for DELETE requests with the actual data to pass, so we need to add it if it's not there
-  const normalizedBody = body ? body.data ? body : { data: { ...body } } : null
-  const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers, body: normalizedBody, errorInterceptor: errorInterceptorFunc })
+  const response = await executeRequest({ fullResponse: options.fullResponse, method: 'delete', url, headers, body, errorInterceptor: errorInterceptorFunc })
   return response
 }
 
