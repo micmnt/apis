@@ -37,14 +37,16 @@ describe('updatePlaceholders function tests', () => {
   })
 
   it('Returns previous updated placeholder after a new placeholder update', async () => {
-    
-    let currentUrl = baseUrl
+
+    let currentUrl: string | undefined = baseUrl
     const notUpdatedFullUrl = 'https://baseurl.com/:placeholder/value'
     const updatedFullUrl = 'https://baseurl.com/key/value'
     const secondUpdatedFullUrl = 'https://baseurl.com/newkey/value'
 
     axios.interceptors.request.use(function (config) {
       currentUrl = config.url
+
+      return config
     }, undefined)
 
     // Execute a first HTTP GET request without updating any placeholder in the resources object
@@ -52,31 +54,33 @@ describe('updatePlaceholders function tests', () => {
     expect(currentUrl).toBe(notUpdatedFullUrl)
 
     // Execute a second HTTP GET request after update some placeholders
-    api.updatePlaceholders({placeholder: '/key'})
+    api.updatePlaceholders({ placeholder: '/key' })
     await api.get({ savedUrl: 'key' })
     expect(currentUrl).toBe(updatedFullUrl)
 
     // Execute a third HTTP GET request after another placeholder update
-    api.updatePlaceholders({placeholder: '/newkey'})
-    await api.get({savedUrl: 'key'})
+    api.updatePlaceholders({ placeholder: '/newkey' })
+    await api.get({ savedUrl: 'key' })
     expect(currentUrl).toBe(secondUpdatedFullUrl)
   })
 
   it('Update the placeholder ignoring the trailing slash', async () => {
-    let currentUrl = baseUrl
+    let currentUrl: string | undefined = baseUrl
     const notUpdatedFullUrl = 'https://baseurl.com/:noTrailingSlashPlaceholder'
     const updatedFullUrl = 'https://baseurl.com/key'
 
     axios.interceptors.request.use(function (config) {
       currentUrl = config.url
+
+      return config
     })
 
     // Execute a first HTTP GET request without updating any placeholder in the resources object
-    await api.get({savedUrl: 'noTrailingSlashKey'})
+    await api.get({ savedUrl: 'noTrailingSlashKey' })
     expect(currentUrl).toBe(notUpdatedFullUrl)
 
     // Execute a second HTTP GET request after update some placeholders
-    api.updatePlaceholders({noTrailingSlashPlaceholder: '/key'})
+    api.updatePlaceholders({ noTrailingSlashPlaceholder: '/key' })
     await api.get({ savedUrl: 'noTrailingSlashKey' })
     expect(currentUrl).toBe(updatedFullUrl)
   })
