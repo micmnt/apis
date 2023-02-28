@@ -1,8 +1,9 @@
 {
   "name": "@micmnt/apis",
-  "version": "2.0.0-alpha",
+  "version": "2.0.1",
   "description": "Apis is a small library to simplify HTTP requests",
-  "main": "lib/src/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib/**/*"
   ],
@@ -34,8 +35,8 @@
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
-    "@typescript-eslint/eslint-plugin": "^5.53.0",
-    "@typescript-eslint/parser": "^5.53.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "core-js": "^3.29.0",
     "eslint": "^8.35.0",
     "eslint-plugin-import": "^2.27.5",
