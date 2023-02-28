@@ -295,7 +295,7 @@ Apis parameters and functions documentation
 | placeholders | `null` | `{listId: '/lists/1'}` | Object containing the placeholders values to switch in URLs | :white_check_mark: |
 
 
-> `api.get({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = null, path = null, customHeaders = []})`
+> `api.get({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = false, path = null, customHeaders = []})`
 
 | Parameter | Default Value | Structure example | Description | Required |
 | --------- | -------------- | -------------------- | ----------- | -------- |
@@ -304,12 +304,12 @@ Apis parameters and functions documentation
 | responseType | `null` | `blob` | Parameter to choose the response type | :x: |
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
-| disableAuth | `null` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter to add custom headers | :x: |
 
 
-> `api.post({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = []})`
+> `api.post({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = false, body = null, path = null, customHeaders = []})`
 
 | Parameter | Default Value | Structure example | Description | Required |
 | --------- | -------------- | -------------------- | ----------- | -------- |
@@ -318,12 +318,12 @@ Apis parameters and functions documentation
 | responseType | `null` | `blob` | Parameter to choose the response type | :x: |
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
-| disableAuth | `null` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server | :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
 
-> `api.put({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = []})`
+> `api.put({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = false, body = null, path = null, customHeaders = []})`
 
 | Parameter | Default Value | Structure example | Description | Required |
 | --------- | -------------- | -------------------- | ----------- | -------- |
@@ -332,12 +332,12 @@ Apis parameters and functions documentation
 | responseType | `null` | `blob` | Parameter to choose the response type | :x: |
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
-| disableAuth | `null` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server| :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
 
-> `api.delete({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = null, body = null, path = null, customHeaders = []})`
+> `api.delete({savedUrl, fullResponse = false, responseType = null, params = null, auth = null, disableAuth = false, body = null, path = null, customHeaders = []})`
 
 | Parameter | Default Value | Structure example | Description | Required |
 | --------- | -------------- | -------------------- | ----------- | -------- |
@@ -346,7 +346,7 @@ Apis parameters and functions documentation
 | responseType | `null` | `blob` | Parameter to choose the response type | :x: |
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
-| disableAuth | `null` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server| :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
