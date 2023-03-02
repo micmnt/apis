@@ -9,7 +9,7 @@ const authorizationTypesMap: IKeyStringMap = {
 
 // Function that creates and sets up the authorization header with local storage token
 export const createHeaders: CreateHeadersFunction = (params = null, overrideAuthToken = null, disableAuth = false, customHeaders = [], responseType = null, tokenName = null, authType = 'bearer') => {
-  const token = tokenName ? window.localStorage.getItem(tokenName) || tokenName : tokenName
+  const token = tokenName ? window?.localStorage?.getItem(tokenName) || tokenName : tokenName
 
   const headers: Headers = {
     headers: {}
