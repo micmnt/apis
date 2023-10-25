@@ -6,13 +6,17 @@ export interface IKeyStringMap {
   [key: string]: string
 }
 
+export interface IRequestBody {
+  [key: string]: any
+}
+
 export interface IBaseResponse {
   data: null | object,
   error: null | AxiosError
 }
 
 export interface IResourceOptions {
-  body?: IKeyStringMap | null,
+  body?: IRequestBody | null,
   responseType?: ResponseType | null,
   params?: IKeyStringMap | null,
   auth?: string | null,
@@ -31,7 +35,7 @@ export type Headers = {
 export type ResourceBaseResponse = {
   url: string,
   headers: Headers,
-  body?: IKeyStringMap | null
+  body?: IRequestBody | null
 }
 
 export type InitFunction = (config: {
@@ -83,10 +87,10 @@ export type DeleteOptions = {
   headers: IKeyStringMap,
   params?: IKeyStringMap,
   responseType?: ResponseType,
-  data: string | IKeyStringMap | null
+  data: string | IRequestBody | null
 }
 
-export type GetAxiosRequest = (method: string, url: string, headers: Headers, body: IKeyStringMap | null) => Promise<AxiosResponse | null>
+export type GetAxiosRequest = (method: string, url: string, headers: Headers, body: IRequestBody | null) => Promise<AxiosResponse | null>
 
 export type ResourceFunction = (config: {
   savedUrl: string,
