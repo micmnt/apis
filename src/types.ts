@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse, ResponseType } from 'axios'
+import { AxiosError, AxiosResponse, GenericAbortSignal, ResponseType } from 'axios'
 
 export type InterceptorFunction = (err: AxiosError) => {}
 
@@ -19,6 +19,7 @@ export interface IResourceOptions {
   body?: IRequestBody | null,
   responseType?: ResponseType | null,
   params?: IKeyStringMap | null,
+  signal?: GenericAbortSignal | undefined,
   auth?: string | null,
   disableAuth?: boolean | null,
   path?: string | null,
@@ -29,6 +30,7 @@ export interface IResourceOptions {
 export type Headers = {
   headers?: IKeyStringMap,
   params?: IKeyStringMap,
+  signal?: GenericAbortSignal | undefined,
   responseType?: ResponseType
 }
 
@@ -61,7 +63,8 @@ export type CreateHeadersFunction = (
   customHeaders?: IKeyStringMap[] | null,
   responseType?: ResponseType | null,
   tokenName?: null | string,
-  authType?: string | null
+  authType?: string | null,
+  signal?: GenericAbortSignal | undefined
 ) => Headers
 
 export type ResourceBaseOperationsFunction = (
@@ -86,6 +89,7 @@ export type ReplacePlaceholdersFunction = (url: string | null, placeholders: IKe
 export type DeleteOptions = {
   headers: IKeyStringMap,
   params?: IKeyStringMap,
+  signal?: GenericAbortSignal | undefined,
   responseType?: ResponseType,
   data: string | IRequestBody | null
 }

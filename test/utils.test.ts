@@ -156,7 +156,7 @@ describe('createHeaders function tests', () => {
 
     expect(createHeaders(null, null, null, null, responseType, null)).toStrictEqual(expectedObject)
   })
-})
+});
 
 describe('getAuthType function tests', () => {
   it('Returns the default value if null or undefined is passed as parameter', () => {
@@ -381,6 +381,36 @@ describe('executeRequest function tests', () => {
     expect(requestResponse).toStrictEqual(expectedResponse)
     expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, { headers: {} })
   })
+
+  it('should cancel the request if abortController is triggered', async () => {
+    const abortController = new AbortController();
+    const baseUrl = 'https://baseurl.com'
+
+    // Mock the axios.get to return a promise that never resolves
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+
+    const expectedResponse = { data: null, error: new Error(errorMessage) }
+
+    const requestResponse = await executeRequest({ url: baseUrl, headers: { headers: {}, signal: abortController.signal } })
+    // Cancel the request
+    abortController.abort();
+
+    expect(requestResponse).toStrictEqual(expectedResponse)
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, { headers: {}, signal: abortController.signal })
+  });
+
+  it('should fetch data successfully if not aborted', async () => {
+    const abortController = new AbortController();
+
+    const baseUrl = 'https://baseurl.com'
+
+    mockedAxios.get = jest.fn().mockRejectedValue(new Error(errorMessage))
+
+    const expectedResponse = { data: null, error: new Error(errorMessage) }
+    const requestResponse = await executeRequest({ url: baseUrl, headers: { headers: {}, signal: abortController.signal } })
+    expect(requestResponse).toStrictEqual(expectedResponse)
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl, { headers: {}, signal: abortController.signal })
+  });
 
   it('Returns an object with correct response data and null error object', async () => {
     const baseUrl = 'https://baseurl.com'

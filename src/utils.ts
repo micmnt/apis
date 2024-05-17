@@ -8,11 +8,15 @@ const authorizationTypesMap: IKeyStringMap = {
 }
 
 // Function that creates and sets up the authorization header with local storage token
-export const createHeaders: CreateHeadersFunction = (params = null, overrideAuthToken = null, disableAuth = false, customHeaders = [], responseType = null, tokenName = null, authType = 'bearer') => {
+export const createHeaders: CreateHeadersFunction = (params = null, overrideAuthToken = null, disableAuth = false, customHeaders = [], responseType = null, tokenName = null, authType = 'bearer', signal = undefined) => {
   const token = tokenName ? window?.localStorage?.getItem(tokenName) || tokenName : tokenName
 
   const headers: Headers = {
     headers: {}
+  }
+
+  if (signal) {
+    headers.signal = signal
   }
 
   if ((overrideAuthToken || token) && !disableAuth) {
@@ -88,9 +92,9 @@ export const getAuthType = (type: string | null | undefined) => {
 }
 
 // function to setup initial parameters for every request
-export const resourcesBaseOperations: ResourceBaseOperationsFunction = (resources, jwtToken, resource, authType, { responseType = null, params = null, auth = null, disableAuth = false, body = null, path = null, customHeaders = [] }) => {
+export const resourcesBaseOperations: ResourceBaseOperationsFunction = (resources, jwtToken, resource, authType, { responseType = null, params = null, auth = null, disableAuth = false, body = null, path = null, signal = undefined, customHeaders = [] }) => {
   // creating request headers
-  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken, authType)
+  const headers = createHeaders(params, auth, disableAuth, customHeaders, responseType, jwtToken, authType, signal)
   // base url
   const baseUrl = resource ? isUrl(resource) ? resource : resources ? resources[resource] || '' : '' : ''
   // complete url
@@ -132,7 +136,7 @@ export const executeRequest: ExecuteRequestFunction = async ({ fullResponse = fa
   try {
     const resourceResponse = await getAxiosRequest(method, url, headers, body)
 
-    if(resourceResponse) {
+    if (resourceResponse) {
       const { data: response, ...rest } = resourceResponse
       if (response) {
         baseResponse.data = fullResponse ? { ...rest, data: response } : response.data ? response.data : response
@@ -142,6 +146,7 @@ export const executeRequest: ExecuteRequestFunction = async ({ fullResponse = fa
     if (errorInterceptor && typeof errorInterceptor === 'function') {
       errorInterceptor(error as AxiosError)
     }
+    console.log(error)
     baseResponse.error = error as AxiosError
   }
 

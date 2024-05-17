@@ -305,6 +305,7 @@ Apis parameters and functions documentation
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
 | disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| signal | `undefined` | `GenericAbortSignal` &#124; `undefined` | Parameter to cancel fired requests | :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter to add custom headers | :x: |
 
@@ -319,6 +320,7 @@ Apis parameters and functions documentation
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
 | disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| signal | `undefined` | `GenericAbortSignal` &#124; `undefined` | Parameter to cancel fired requests | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server | :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
@@ -333,6 +335,7 @@ Apis parameters and functions documentation
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
 | disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| signal | `undefined` | `GenericAbortSignal` &#124; `undefined` | Parameter to cancel fired requests | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server| :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
@@ -347,6 +350,7 @@ Apis parameters and functions documentation
 | params | `null` | `{skip: 0,limit: 20}` | Object containing all GET parameters for the request | :x: |
 | auth | `null` | `'Bearer 123-e45f33-authToken'` | Parameter to override the `authentication` header | :x: |
 | disableAuth | `false` | `true` &#124; `false` | Parameter to skip the `authorization` header | :x: |
+| signal | `undefined` | `GenericAbortSignal` &#124; `undefined` | Parameter to cancel fired requests | :x: |
 | body | `null` | `{id: 1, text: 'Fare la lavatrice'}` | Parameter to set the request's body to send to the server| :x: |
 | path | `null` | `'/public'` | Parameter used to append path to the `baseUrl` | :x: |
 | customHeaders | `[]` | `[{key: 'x-use-public-link',value: true}]` | Parameter used to append path to the `baseUrl` | :x: |
